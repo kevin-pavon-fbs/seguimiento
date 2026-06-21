@@ -40,6 +40,24 @@ export function tieneToqueHoy(fechaIngreso: string): boolean {
   return TOQUES.some(t => t.dia === dias);
 }
 
+export function estaVencido(fechaProximoToque: string, estado: EstadoLead): boolean {
+  if (!fechaProximoToque || ESTADOS_CONGELADOS.includes(estado)) return false;
+  const proximo = parseDate(fechaProximoToque);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  proximo.setHours(0, 0, 0, 0);
+  return proximo < hoy;
+}
+
+export function diasVencido(fechaProximoToque: string): number {
+  if (!fechaProximoToque) return 0;
+  const proximo = parseDate(fechaProximoToque);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  proximo.setHours(0, 0, 0, 0);
+  return Math.floor((hoy.getTime() - proximo.getTime()) / 86400000);
+}
+
 export function toqueSegunDias(dias: number): Toque | null {
   return TOQUES.find(t => t.dia === dias) || null;
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Lead } from '@/lib/types';
 import { calcularDias, tieneToqueHoy } from '@/lib/utils';
 import Header from '@/components/Header';
+import AlertaBanner from '@/components/AlertaBanner';
 import KanbanBoard from '@/components/KanbanBoard';
 import LeadModal from '@/components/LeadModal';
 import AddLeadModal from '@/components/AddLeadModal';
@@ -99,6 +100,8 @@ export default function Home() {
         onReporte={() => setShowReporte(true)}
         onSetup={handleSetup}
       />
+
+      <AlertaBanner leads={leads} onLeadClick={setSelectedLead} />
 
       <KanbanBoard
         leads={leads}

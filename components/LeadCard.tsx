@@ -83,8 +83,13 @@ export default function LeadCard({ lead, index, onClick }: Props) {
           </div>
 
           <div style={{ marginTop: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#8888aa', fontSize: 11 }}>{lead.diasEnSeguimiento}d</span>
+            <span style={{ color: '#8888aa', fontSize: 11 }} title="Fecha de ingreso al circuito">
+              📅 {lead.fechaIngreso}
+            </span>
             <span style={{ color, fontSize: 10, fontWeight: 600 }}>{lead.estado}</span>
+          </div>
+          <div style={{ marginTop: 3 }}>
+            <span style={{ color: '#4a4a6a', fontSize: 10 }}>{lead.diasEnSeguimiento}d en seguimiento</span>
           </div>
 
           {lead.notas && (

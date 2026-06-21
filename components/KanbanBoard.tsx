@@ -1,4 +1,5 @@
 'use client';
+import { useState, useCallback } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { Lead } from '@/lib/types';
 import { TOQUES, estaCongelado } from '@/lib/utils';
@@ -12,7 +13,21 @@ interface Props {
   onLeadUpdate: (id: string, updates: Partial<Lead>) => void;
 }
 
+interface Toast {
+  id: number;
+  msg: string;
+  ok: boolean;
+}
+
 export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadClick, onLeadUpdate }: Props) {
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = useCallback((msg: string, ok: boolean) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, msg, ok }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
+  }, []);
+
   const filtered = leads.filter(l => {
     if (filterCloser && l.closer !== filterCloser) return false;
     if (!showFrozen && estaCongelado(l.estado)) return false;
@@ -28,6 +43,9 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
     if (!lead || estaCongelado(lead.estado)) return;
     if (lead.toqueActual === newToque) return;
 
+    const fromInfo = TOQUES.find(t => t.num === lead.toqueActual);
+    const toInfo = TOQUES.find(t => t.num === newToque);
+
     // Optimistic update
     onLeadUpdate(lead.id, { toqueActual: newToque });
 
@@ -37,14 +55,40 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ toqueActual: newToque }),
       });
+      addToast(`${lead.nombre} → Toque #${newToque} (${toInfo?.nombre ?? ''})`, true);
     } catch {
-      // Revert on error
       onLeadUpdate(lead.id, { toqueActual: lead.toqueActual });
+      addToast(`Error al mover ${lead.nombre}`, false);
     }
+
+    void fromInfo; // suppress unused warning
   };
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
+      {/* Toast stack */}
+      <div style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 500, display: 'flex', flexDirection: 'column', gap: 8, pointerEvents: 'none' }}>
+        {toasts.map(t => (
+          <div
+            key={t.id}
+            style={{
+              background: t.ok ? '#14532d' : '#7f1d1d',
+              border: `1px solid ${t.ok ? '#16a34a' : '#dc2626'}`,
+              color: '#f0f0ff',
+              padding: '10px 16px',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 500,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+              animation: 'slideIn 200ms ease',
+              maxWidth: 320,
+            }}
+          >
+            {t.ok ? '✅' : '❌'} {t.msg}
+          </div>
+        ))}
+      </div>
+
       <div
         style={{
           display: 'flex',
