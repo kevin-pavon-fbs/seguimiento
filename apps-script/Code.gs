@@ -59,9 +59,10 @@ function handleRequest(e) {
       result = getReporte();
     } else if (action === 'sendSlackReporte') {
       const data = JSON.parse(e.postData.contents);
-      result = sendSlackReporte(data.stats);
+      result = sendSlackReporte(data.stats, data.slackToken);
     } else if (action === 'testSlackAlerta') {
-      result = testSlackAlerta();
+      const data = JSON.parse(e.postData.contents);
+      result = testSlackAlerta(data.slackToken);
     } else {
       result = { error: 'Unknown action: ' + action };
     }
