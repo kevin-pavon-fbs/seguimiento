@@ -345,15 +345,32 @@ function sendSlackReporte(stats, slackToken) {
     const d = stats.porCloser[closer];
     lines.push('• *' + closer + '*: ' + d.activos + ' activos, ' + d.ganados + ' ganados, ' + d.toques + ' toques');
   });
+  sendSlackDM(token, SLACK_USER_ID, lines.join('\n'));
+  return { mensaje: 'Reporte enviado a Slack' };
+}
 
-  UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
+function sendSlackDM(token, userId, text) {
+  // Open DM channel first (required for bots to DM users)
+  const openResp = UrlFetchApp.fetch('https://slack.com/api/conversations.open', {
     method: 'post',
     contentType: 'application/json',
     headers: { Authorization: 'Bearer ' + token },
-    payload: JSON.stringify({ channel: SLACK_USER_ID, text: lines.join('\n'), mrkdwn: true }),
+    payload: JSON.stringify({ users: userId }),
     muteHttpExceptions: true,
   });
-  return { mensaje: 'Reporte enviado a Slack' };
+  const openJson = JSON.parse(openResp.getContentText());
+  if (!openJson.ok) throw new Error('Slack conversations.open error: ' + openJson.error);
+  const channelId = openJson.channel.id;
+
+  const msgResp = UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + token },
+    payload: JSON.stringify({ channel: channelId, text: text, mrkdwn: true }),
+    muteHttpExceptions: true,
+  });
+  const msgJson = JSON.parse(msgResp.getContentText());
+  if (!msgJson.ok) throw new Error('Slack chat.postMessage error: ' + msgJson.error);
 }
 
 function testSlackAlerta(slackToken) {
@@ -363,15 +380,7 @@ function testSlackAlerta(slackToken) {
   }
   const fechaStr = Utilities.formatDate(new Date(), 'America/Argentina/Buenos_Aires', 'dd/MM/yyyy HH:mm');
   const msg = '🔔 *Test de Alarma — ' + fechaStr + '*\n\n✅ Las notificaciones de seguimiento están funcionando.\n\nEste es el formato de cada mañana a las 5am:\n\n📋 *Seguimientos de HOY*\n• Lead Ejemplo - Toque #2: Seguimiento WhatsApp\n• Otro Lead - Toque #4: Llamada - Romper objeción';
-  const resp = UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
-    method: 'post',
-    contentType: 'application/json',
-    headers: { Authorization: 'Bearer ' + token },
-    payload: JSON.stringify({ channel: SLACK_USER_ID, text: msg, mrkdwn: true }),
-    muteHttpExceptions: true,
-  });
-  const json = JSON.parse(resp.getContentText());
-  if (!json.ok) throw new Error('Slack error: ' + json.error);
+  sendSlackDM(token, SLACK_USER_ID, msg);
   return { mensaje: 'Test enviado a Slack' };
 }
 
@@ -414,14 +423,9 @@ function checkLeadsDelDia() {
   lines.push('');
   lines.push('Total: ' + pendientes.length + ' seguimiento' + (pendientes.length !== 1 ? 's' : '') + ' pendiente' + (pendientes.length !== 1 ? 's' : ''));
 
-  UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
-    method: 'post',
-    contentType: 'application/json',
-    headers: { Authorization: 'Bearer ' + SLACK_BOT_TOKEN },
-    payload: JSON.stringify({ channel: SLACK_USER_ID, text: lines.join('\n'), mrkdwn: true }),
-    muteHttpExceptions: true,
-  });
+  sendSlackDM(SLACK_BOT_TOKEN, SLACK_USER_ID, lines.join('\n'));
 }
+
 
 function configurarTrigger5am() {
   ScriptApp.getProjectTriggers()
