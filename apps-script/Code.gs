@@ -96,8 +96,10 @@ function setupSheets() {
   let config = ss.getSheetByName('Config');
   if (!config) config = ss.insertSheet('Config');
   config.clearContents();
-  config.getRange('A1').setValue('CLOSERS').setFontWeight('bold');
+  config.getRange('A1').setValue('NOMBRE CLOSER').setFontWeight('bold');
+  config.getRange('B1').setValue('SLACK ID').setFontWeight('bold');
   config.getRange('A2').setValue('Kevin Pavon');
+  config.getRange('B2').setValue(SLACK_USER_ID);
   config.getRange('C1').setValue('TOQUE').setFontWeight('bold');
   config.getRange('D1').setValue('DÍA').setFontWeight('bold');
   config.getRange('E1').setValue('DESCRIPCIÓN').setFontWeight('bold');
@@ -238,13 +240,24 @@ function getNotas(leadId) {
 function getConfig() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheet = ss.getSheetByName('Config');
-  if (!sheet) return { closers: ['Kevin Pavon'], toques: TOQUES };
+  if (!sheet) return { closers: [{ nombre: 'Kevin Pavon', slackId: SLACK_USER_ID }], toques: TOQUES };
   const data = sheet.getDataRange().getValues();
   const closers = [];
   for (let i = 1; i < data.length; i++) {
-    if (data[i][0]) closers.push(data[i][0]);
+    if (data[i][0]) closers.push({ nombre: data[i][0], slackId: data[i][1] || '' });
   }
   return { closers: closers, toques: TOQUES };
+}
+
+function getSlackIdPorCloser(nombreCloser) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('Config');
+  if (!sheet) return SLACK_USER_ID;
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === nombreCloser && data[i][1]) return data[i][1];
+  }
+  return SLACK_USER_ID; // fallback al admin si el closer no tiene Slack ID
 }
 
 // ─── REPORTE ───────────────────────────────────────────────────────────────
@@ -356,7 +369,7 @@ function checkLeadsDelDia() {
     if (!toque) continue;
     sheet.getRange(i + 1, 7).setValue(toque.num);
     sheet.getRange(i + 1, 9).setValue(formatDateArg(hoy));
-    const slackId = row[10] || SLACK_USER_ID;
+    const slackId = getSlackIdPorCloser(row[3]);
     enviarAlertaSlack(nombre, toque, row[3], slackId);
   }
 }

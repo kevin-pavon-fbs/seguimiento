@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { Lead } from '@/lib/types';
+import { Lead, Closer } from '@/lib/types';
 import { formatearFechaHoy, calcularDias, tieneToqueHoy } from '@/lib/utils';
 
 const FUENTES = ['Meta Ads', 'Orgánico', 'Referido', 'Otro'];
 
 interface Props {
-  closers: string[];
+  closers: Closer[];
   onClose: () => void;
   onAdd: (lead: Lead) => void;
 }
@@ -15,7 +15,7 @@ export default function AddLeadModal({ closers, onClose, onAdd }: Props) {
   const [form, setForm] = useState({
     nombre: '',
     fuente: 'Meta Ads',
-    closer: closers[0] || 'Kevin Pavon',
+    closer: closers[0]?.nombre || 'Kevin Pavon',
     fechaIngreso: formatearFechaHoy(),
   });
   const [loading, setLoading] = useState(false);
@@ -112,7 +112,7 @@ export default function AddLeadModal({ closers, onClose, onAdd }: Props) {
               onChange={e => setForm(p => ({ ...p, closer: e.target.value }))}
               style={inputStyle}
             >
-              {closers.map(c => <option key={c} value={c}>{c}</option>)}
+              {closers.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
             </select>
           </div>
 

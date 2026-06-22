@@ -24,6 +24,11 @@ export interface Nota {
   nota: string;
 }
 
+export interface Closer {
+  nombre: string;
+  slackId: string;
+}
+
 export interface Toque {
   num: number;
   nombre: string;

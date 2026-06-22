@@ -1,7 +1,8 @@
 'use client';
+import { Closer } from '@/lib/types';
 
 interface Props {
-  closers: string[];
+  closers: Closer[];
   filterCloser: string;
   onFilterChange: (c: string) => void;
   showFrozen: boolean;
@@ -46,7 +47,7 @@ export default function Header({
         style={{ background: '#252540', color: '#f0f0ff', border: '1px solid #2a2a4a', borderRadius: 6, padding: '6px 10px', fontSize: 13, cursor: 'pointer' }}
       >
         <option value="">Todos los closers</option>
-        {closers.map(c => <option key={c} value={c}>{c}</option>)}
+        {closers.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
       </select>
 
       <button

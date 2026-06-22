@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Lead, Nota } from '@/lib/types';
+import { Lead, Nota, Closer } from '@/lib/types';
 import { TOQUES, estaCongelado } from '@/lib/utils';
 
 const ESTADOS = ['Activo', 'No responde', 'Ganado', 'No interesado', 'Perdido'] as const;
@@ -16,7 +16,7 @@ const estadoColors: Record<string, string> = {
 
 interface Props {
   lead: Lead;
-  closers: string[];
+  closers: Closer[];
   onClose: () => void;
   onUpdate: (id: string, updates: Partial<Lead>) => void;
   onDelete: (id: string) => void;
@@ -187,7 +187,7 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
               <div>
                 <label style={{ color: '#8888aa', fontSize: 11, display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Closer</label>
                 <select value={lead.closer} onChange={e => setLead(p => ({ ...p, closer: e.target.value }))} style={inputStyle}>
-                  {closers.map(c => <option key={c} value={c}>{c}</option>)}
+                  {closers.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                 </select>
               </div>
               <div>

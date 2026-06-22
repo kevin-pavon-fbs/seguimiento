@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Lead } from '@/lib/types';
+import { Lead, Closer } from '@/lib/types';
 import { calcularDias, tieneToqueHoy } from '@/lib/utils';
 import Header from '@/components/Header';
 import AlertaBanner from '@/components/AlertaBanner';
@@ -11,7 +11,7 @@ import ReporteModal from '@/components/ReporteModal';
 
 export default function Home() {
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [closers, setClosers] = useState<string[]>([]);
+  const [closers, setClosers] = useState<Closer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterCloser, setFilterCloser] = useState('');
@@ -28,7 +28,7 @@ export default function Home() {
       .then(([leadsData, configData]) => {
         if (Array.isArray(leadsData)) setLeads(leadsData);
         if (configData?.closers) setClosers(configData.closers);
-        else setClosers(['Kevin Pavon']);
+        else setClosers([{ nombre: 'Kevin Pavon', slackId: '' }]);
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
