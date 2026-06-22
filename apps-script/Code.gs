@@ -60,6 +60,8 @@ function handleRequest(e) {
     } else if (action === 'sendSlackReporte') {
       const data = JSON.parse(e.postData.contents);
       result = sendSlackReporte(data.stats);
+    } else if (action === 'testSlackAlerta') {
+      result = testSlackAlerta();
     } else {
       result = { error: 'Unknown action: ' + action };
     }
@@ -351,6 +353,19 @@ function sendSlackReporte(stats) {
     muteHttpExceptions: true,
   });
   return { mensaje: 'Reporte enviado a Slack' };
+}
+
+function testSlackAlerta() {
+  const fechaStr = Utilities.formatDate(new Date(), 'America/Argentina/Buenos_Aires', 'dd/MM/yyyy HH:mm');
+  const msg = '🔔 *Test de Alarma — ' + fechaStr + '*\n\n✅ Las notificaciones de seguimiento están funcionando.\n\nEste es el formato que vas a recibir cada mañana a las 5am:\n\n📋 *Seguimientos de HOY*\n• Lead Ejemplo - Toque #2: Seguimiento WhatsApp\n• Otro Lead - Toque #4: Llamada - Romper objeción';
+  UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + SLACK_BOT_TOKEN },
+    payload: JSON.stringify({ channel: SLACK_USER_ID, text: msg, mrkdwn: true }),
+    muteHttpExceptions: true,
+  });
+  return { mensaje: 'Test enviado a Slack' };
 }
 
 // ─── DAILY TRIGGER ─────────────────────────────────────────────────────────

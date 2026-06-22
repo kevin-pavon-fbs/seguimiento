@@ -64,4 +64,5 @@ export const appsScript = {
   getConfig: () => callScriptGet('getConfig'),
   getReporte: () => callScript('getReporte', {}),
   sendSlackReporte: (stats: object) => callScript('sendSlackReporte', { stats }),
+  testSlackAlerta: () => callScript('testSlackAlerta', {}),
 };

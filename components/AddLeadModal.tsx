@@ -41,7 +41,7 @@ export default function AddLeadModal({ closers, onClose, onAdd }: Props) {
         id: data.id,
         estado: 'Activo',
         toqueActual: 1,
-        fechaUltimoToque: '',
+        fechaUltimoToque: form.fechaIngreso, // toque 1 auto-confirmed on creation
         fechaProximoToque: form.fechaIngreso,
         notas: '',
         slackIdCloser: '',
