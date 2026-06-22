@@ -4,7 +4,8 @@ import { appsScript } from '@/lib/appsScript';
 export async function POST(req: Request) {
   try {
     const { stats } = await req.json();
-    const result = await appsScript.sendSlackReporte(stats);
+    const slackToken = process.env.SLACK_BOT_TOKEN || '';
+    const result = await appsScript.sendSlackReporte(stats, slackToken);
     return NextResponse.json(result);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Error';

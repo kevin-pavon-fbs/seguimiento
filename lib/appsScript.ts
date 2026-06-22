@@ -63,6 +63,6 @@ export const appsScript = {
   getNotas: (leadId: string) => callScriptGet('getNotas', { leadId }),
   getConfig: () => callScriptGet('getConfig'),
   getReporte: () => callScript('getReporte', {}),
-  sendSlackReporte: (stats: object) => callScript('sendSlackReporte', { stats }),
-  testSlackAlerta: () => callScript('testSlackAlerta', {}),
+  sendSlackReporte: (stats: object, slackToken: string) => callScript('sendSlackReporte', { stats, slackToken }),
+  testSlackAlerta: (slackToken: string) => callScript('testSlackAlerta', { slackToken }),
 };

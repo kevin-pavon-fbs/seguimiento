@@ -327,7 +327,8 @@ function getReporte() {
 
 // ─── SLACK ─────────────────────────────────────────────────────────────────
 
-function sendSlackReporte(stats) {
+function sendSlackReporte(stats, slackToken) {
+  const token = slackToken || SLACK_BOT_TOKEN;
   const lines = [
     '📊 *Reporte de Seguimiento — ' + stats.fechaGenerado + '*',
     '',
@@ -348,23 +349,24 @@ function sendSlackReporte(stats) {
   UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
     method: 'post',
     contentType: 'application/json',
-    headers: { Authorization: 'Bearer ' + SLACK_BOT_TOKEN },
+    headers: { Authorization: 'Bearer ' + token },
     payload: JSON.stringify({ channel: SLACK_USER_ID, text: lines.join('\n'), mrkdwn: true }),
     muteHttpExceptions: true,
   });
   return { mensaje: 'Reporte enviado a Slack' };
 }
 
-function testSlackAlerta() {
-  if (SLACK_BOT_TOKEN === 'REEMPLAZAR_CON_TOKEN') {
-    throw new Error('SLACK_BOT_TOKEN no está configurado en Code.gs');
+function testSlackAlerta(slackToken) {
+  const token = slackToken || SLACK_BOT_TOKEN;
+  if (!token || token === 'REEMPLAZAR_CON_TOKEN') {
+    throw new Error('SLACK_BOT_TOKEN no está configurado. Agregalo como env var en Vercel.');
   }
   const fechaStr = Utilities.formatDate(new Date(), 'America/Argentina/Buenos_Aires', 'dd/MM/yyyy HH:mm');
   const msg = '🔔 *Test de Alarma — ' + fechaStr + '*\n\n✅ Las notificaciones de seguimiento están funcionando.\n\nEste es el formato de cada mañana a las 5am:\n\n📋 *Seguimientos de HOY*\n• Lead Ejemplo - Toque #2: Seguimiento WhatsApp\n• Otro Lead - Toque #4: Llamada - Romper objeción';
   const resp = UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
     method: 'post',
     contentType: 'application/json',
-    headers: { Authorization: 'Bearer ' + SLACK_BOT_TOKEN },
+    headers: { Authorization: 'Bearer ' + token },
     payload: JSON.stringify({ channel: SLACK_USER_ID, text: msg, mrkdwn: true }),
     muteHttpExceptions: true,
   });
