@@ -83,8 +83,8 @@ function setupSheets() {
   let leads = ss.getSheetByName('Leads');
   if (!leads) leads = ss.insertSheet('Leads');
   leads.clearContents();
-  leads.getRange(1, 1, 1, 11).setValues([['ID', 'Nombre', 'Fuente', 'Closer', 'Fecha Ingreso', 'Estado', 'Toque Actual', 'Fecha Último Toque', 'Fecha Próximo Toque', 'Notas', 'Slack ID Closer']]);
-  leads.getRange(1, 1, 1, 11).setBackground('#1a1a2e').setFontColor('#ffffff').setFontWeight('bold');
+  leads.getRange(1, 1, 1, 13).setValues([['ID', 'Nombre', 'Fuente', 'Closer', 'Fecha Ingreso', 'Estado', 'Toque Actual', 'Fecha Último Toque', 'Fecha Próximo Toque', 'Notas', 'Slack ID Closer', 'Largo Plazo', 'Próximo Contacto']]);
+  leads.getRange(1, 1, 1, 13).setBackground('#1a1a2e').setFontColor('#ffffff').setFontWeight('bold');
   leads.setFrozenRows(1);
 
   let notas = ss.getSheetByName('Notas');
@@ -140,6 +140,8 @@ function getLeads() {
       fechaProximoToque: row[8] ? formatDateArg(new Date(row[8])) : '',
       notas: row[9] || '',
       slackIdCloser: row[10] || '',
+      largoplazo: row[11] === true || row[11] === 'TRUE',
+      proximoContacto: row[12] || '',
     };
   });
 }
@@ -152,7 +154,7 @@ function addLead(data) {
   const ingresoDate = parseDate(fechaIngreso);
   const fechaProximo = formatDateArg(ingresoDate);
 
-  sheet.appendRow([id, data.nombre, data.fuente, data.closer, fechaIngreso, 'Activo', 1, '', fechaProximo, '', data.slackIdCloser || '']);
+  sheet.appendRow([id, data.nombre, data.fuente, data.closer, fechaIngreso, 'Activo', 1, '', fechaProximo, '', data.slackIdCloser || '', data.largoplazo || false, data.proximoContacto || '']);
   return { id: id, mensaje: 'Lead creado' };
 }
 
@@ -185,6 +187,8 @@ function updateLead(data) {
       }
       if (data.notas !== undefined) sheet.getRange(i + 1, 10).setValue(data.notas);
       if (data.slackIdCloser !== undefined) sheet.getRange(i + 1, 11).setValue(data.slackIdCloser);
+      if (data.largoplazo !== undefined) sheet.getRange(i + 1, 12).setValue(data.largoplazo);
+      if (data.proximoContacto !== undefined) sheet.getRange(i + 1, 13).setValue(data.proximoContacto);
       return { mensaje: 'Lead actualizado' };
     }
   }
@@ -358,6 +362,8 @@ function checkLeadsDelDia() {
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 
+  const pendientes = [];
+
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     const nombre = row[1];
@@ -367,20 +373,30 @@ function checkLeadsDelDia() {
     const dias = Math.floor((hoy - fechaIngreso) / 86400000);
     const toque = TOQUES.find(function(t) { return t.dia === dias; });
     if (!toque) continue;
+
+    // Update sheet
     sheet.getRange(i + 1, 7).setValue(toque.num);
     sheet.getRange(i + 1, 9).setValue(formatDateArg(hoy));
-    const slackId = getSlackIdPorCloser(row[3]);
-    enviarAlertaSlack(nombre, toque, row[3], slackId);
-  }
-}
 
-function enviarAlertaSlack(nombre, toque, closer, slackId) {
-  const msg = '🔔 *Seguimiento pendiente hoy*\n\n👤 *Lead:* ' + nombre + '\n📋 *Toque #' + toque.num + ':* ' + toque.nombre + '\n📅 *Día ' + toque.dia + ' del seguimiento*\n👥 *Closer:* ' + closer + '\n\n➡️ Abrí la app para actualizar el estado.';
+    pendientes.push({ nombre: nombre, toque: toque });
+  }
+
+  if (pendientes.length === 0) return;
+
+  // Build ONE message for all pending leads
+  const fechaStr = Utilities.formatDate(hoy, 'America/Argentina/Buenos_Aires', 'dd/MM/yyyy');
+  const lines = ['🎯 *Seguimientos de HOY — ' + fechaStr + '*', ''];
+  pendientes.forEach(function(p) {
+    lines.push('• ' + p.nombre + ' - Toque #' + p.toque.num + ': ' + p.toque.nombre);
+  });
+  lines.push('');
+  lines.push('Total: ' + pendientes.length + ' seguimiento' + (pendientes.length !== 1 ? 's' : '') + ' pendiente' + (pendientes.length !== 1 ? 's' : ''));
+
   UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
     method: 'post',
     contentType: 'application/json',
     headers: { Authorization: 'Bearer ' + SLACK_BOT_TOKEN },
-    payload: JSON.stringify({ channel: slackId, text: msg, mrkdwn: true }),
+    payload: JSON.stringify({ channel: SLACK_USER_ID, text: lines.join('\n'), mrkdwn: true }),
     muteHttpExceptions: true,
   });
 }

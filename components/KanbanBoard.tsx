@@ -2,13 +2,14 @@
 import { useState, useCallback } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { Lead } from '@/lib/types';
-import { TOQUES, estaCongelado } from '@/lib/utils';
+import { TOQUES, estaCongelado, formatearFechaHoy } from '@/lib/utils';
 import KanbanColumn from './KanbanColumn';
 
 interface Props {
   leads: Lead[];
   filterCloser: string;
-  showFrozen: boolean;
+  showGanados: boolean;
+  showPerdidos: boolean;
   onLeadClick: (lead: Lead) => void;
   onLeadUpdate: (id: string, updates: Partial<Lead>) => void;
 }
@@ -19,7 +20,7 @@ interface Toast {
   ok: boolean;
 }
 
-export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadClick, onLeadUpdate }: Props) {
+export default function KanbanBoard({ leads, filterCloser, showGanados, showPerdidos, onLeadClick, onLeadUpdate }: Props) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback((msg: string, ok: boolean) => {
@@ -30,7 +31,8 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
 
   const filtered = leads.filter(l => {
     if (filterCloser && l.closer !== filterCloser) return false;
-    if (!showFrozen && estaCongelado(l.estado)) return false;
+    if (l.estado === 'Ganado' && !showGanados) return false;
+    if ((l.estado === 'Perdido' || l.estado === 'No interesado') && !showPerdidos) return false;
     return true;
   });
 
@@ -45,9 +47,10 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
 
     const fromInfo = TOQUES.find(t => t.num === lead.toqueActual);
     const toInfo = TOQUES.find(t => t.num === newToque);
+    const hoy = formatearFechaHoy();
 
-    // Optimistic update
-    onLeadUpdate(lead.id, { toqueActual: newToque });
+    // Optimistic update — dragging = confirming the toque (set fechaUltimoToque = today)
+    onLeadUpdate(lead.id, { toqueActual: newToque, fechaUltimoToque: hoy });
 
     try {
       await fetch(`/api/leads/${lead.id}`, {
@@ -57,7 +60,7 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
       });
       addToast(`${lead.nombre} → Toque #${newToque} (${toInfo?.nombre ?? ''})`, true);
     } catch {
-      onLeadUpdate(lead.id, { toqueActual: lead.toqueActual });
+      onLeadUpdate(lead.id, { toqueActual: lead.toqueActual, fechaUltimoToque: lead.fechaUltimoToque });
       addToast(`Error al mover ${lead.nombre}`, false);
     }
 
@@ -72,14 +75,14 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
           <div
             key={t.id}
             style={{
-              background: t.ok ? '#14532d' : '#7f1d1d',
+              background: t.ok ? '#dcfce7' : '#fee2e2',
               border: `1px solid ${t.ok ? '#16a34a' : '#dc2626'}`,
-              color: '#f0f0ff',
+              color: t.ok ? '#166534' : '#991b1b',
               padding: '10px 16px',
               borderRadius: 8,
               fontSize: 13,
               fontWeight: 500,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               animation: 'slideIn 200ms ease',
               maxWidth: 320,
             }}
@@ -98,6 +101,7 @@ export default function KanbanBoard({ leads, filterCloser, showFrozen, onLeadCli
           height: 'calc(100vh - 53px)',
           alignItems: 'flex-start',
           boxSizing: 'border-box',
+          background: '#f5f5f8',
         }}
         onWheel={e => { (e.currentTarget as HTMLElement).scrollLeft += e.deltaY; }}
       >

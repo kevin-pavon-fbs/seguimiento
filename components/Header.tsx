@@ -5,8 +5,10 @@ interface Props {
   closers: Closer[];
   filterCloser: string;
   onFilterChange: (c: string) => void;
-  showFrozen: boolean;
-  onToggleFrozen: () => void;
+  showGanados: boolean;
+  onToggleGanados: () => void;
+  showPerdidos: boolean;
+  onTogglePerdidos: () => void;
   onAddLead: () => void;
   onReporte: () => void;
   onSetup: () => void;
@@ -16,16 +18,18 @@ export default function Header({
   closers,
   filterCloser,
   onFilterChange,
-  showFrozen,
-  onToggleFrozen,
+  showGanados,
+  onToggleGanados,
+  showPerdidos,
+  onTogglePerdidos,
   onAddLead,
   onReporte,
   onSetup,
 }: Props) {
   return (
     <header style={{
-      background: '#1a1a2e',
-      borderBottom: '1px solid #2a2a4a',
+      background: '#ffffff',
+      borderBottom: '1px solid #e2e2ea',
       padding: '10px 20px',
       display: 'flex',
       alignItems: 'center',
@@ -37,29 +41,36 @@ export default function Header({
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 'auto' }}>
         <span style={{ fontSize: 20 }}>🎯</span>
-        <span style={{ color: '#f0f0ff', fontWeight: 700, fontSize: 16 }}>Seguimiento Leads</span>
-        <span style={{ color: '#8888aa', fontSize: 12 }}>12 toques</span>
+        <span style={{ color: '#1a1a2e', fontWeight: 700, fontSize: 16 }}>Seguimiento Leads</span>
+        <span style={{ color: '#6b7280', fontSize: 12 }}>12 toques</span>
       </div>
 
       <select
         value={filterCloser}
         onChange={e => onFilterChange(e.target.value)}
-        style={{ background: '#252540', color: '#f0f0ff', border: '1px solid #2a2a4a', borderRadius: 6, padding: '6px 10px', fontSize: 13, cursor: 'pointer' }}
+        style={{ background: '#f9f9fb', color: '#1a1a2e', border: '1px solid #e2e2ea', borderRadius: 6, padding: '6px 10px', fontSize: 13, cursor: 'pointer' }}
       >
         <option value="">Todos los closers</option>
         {closers.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
       </select>
 
       <button
-        onClick={onToggleFrozen}
-        style={{ background: showFrozen ? '#7c3aed' : '#252540', color: '#f0f0ff', border: '1px solid #2a2a4a', borderRadius: 6, padding: '6px 12px', fontSize: 13, cursor: 'pointer' }}
+        onClick={onToggleGanados}
+        style={{ background: showGanados ? '#dbeafe' : '#f9f9fb', color: showGanados ? '#1e40af' : '#6b7280', border: '1px solid #e2e2ea', borderRadius: 6, padding: '6px 12px', fontSize: 13, cursor: 'pointer' }}
       >
-        {showFrozen ? '👁 Ocultar cerrados' : '👁 Mostrar cerrados'}
+        {showGanados ? '👁 Ocultar ganados' : '👁 Ganados'}
+      </button>
+
+      <button
+        onClick={onTogglePerdidos}
+        style={{ background: showPerdidos ? '#fee2e2' : '#f9f9fb', color: showPerdidos ? '#991b1b' : '#6b7280', border: '1px solid #e2e2ea', borderRadius: 6, padding: '6px 12px', fontSize: 13, cursor: 'pointer' }}
+      >
+        {showPerdidos ? '👁 Ocultar perdidos' : '👁 Perdidos'}
       </button>
 
       <button
         onClick={onReporte}
-        style={{ background: '#252540', color: '#f0f0ff', border: '1px solid #2a2a4a', borderRadius: 6, padding: '6px 12px', fontSize: 13, cursor: 'pointer' }}
+        style={{ background: '#f9f9fb', color: '#1a1a2e', border: '1px solid #e2e2ea', borderRadius: 6, padding: '6px 12px', fontSize: 13, cursor: 'pointer' }}
       >
         📊 Reporte
       </button>
@@ -67,14 +78,14 @@ export default function Header({
       <button
         onClick={onSetup}
         title="Inicializar pestañas en Google Sheets (solo una vez)"
-        style={{ background: '#252540', color: '#8888aa', border: '1px solid #2a2a4a', borderRadius: 6, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}
+        style={{ background: '#f9f9fb', color: '#6b7280', border: '1px solid #e2e2ea', borderRadius: 6, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}
       >
         ⚙️ Setup
       </button>
 
       <button
         onClick={onAddLead}
-        style={{ background: '#00ff88', color: '#0f0f1a', borderRadius: 6, padding: '6px 14px', fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer' }}
+        style={{ background: '#6d28d9', color: '#ffffff', borderRadius: 6, padding: '6px 14px', fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer' }}
       >
         + Nuevo Lead
       </button>

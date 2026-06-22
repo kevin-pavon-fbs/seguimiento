@@ -7,11 +7,11 @@ const ESTADOS = ['Activo', 'No responde', 'Ganado', 'No interesado', 'Perdido'] 
 const FUENTES = ['Meta Ads', 'Orgánico', 'Referido', 'Otro'];
 
 const estadoColors: Record<string, string> = {
-  'Activo': '#00ff88',
-  'No responde': '#fbbf24',
-  'Ganado': '#60a5fa',
-  'No interesado': '#4a4a6a',
-  'Perdido': '#4a4a6a',
+  'Activo': '#16a34a',
+  'No responde': '#d97706',
+  'Ganado': '#2563eb',
+  'No interesado': '#9ca3af',
+  'Perdido': '#9ca3af',
 };
 
 interface Props {
@@ -116,19 +116,28 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
 
   const inputStyle = {
     width: '100%',
-    background: '#252540',
-    border: '1px solid #2a2a4a',
+    background: '#f9f9fb',
+    border: '1px solid #e2e2ea',
     borderRadius: 6,
     padding: '6px 8px',
-    color: '#f0f0ff',
+    color: '#1a1a2e',
     fontSize: 13,
     boxSizing: 'border-box' as const,
     outline: 'none',
   };
 
+  const labelStyle = {
+    color: '#6b7280',
+    fontSize: 11,
+    display: 'block' as const,
+    marginBottom: 4,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+  };
+
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200 }} />
       <div style={{
         position: 'fixed',
         top: 0,
@@ -136,8 +145,8 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
         height: '100vh',
         width: 480,
         maxWidth: '95vw',
-        background: '#1a1a2e',
-        borderLeft: '1px solid #2a2a4a',
+        background: '#ffffff',
+        borderLeft: '1px solid #e2e2ea',
         zIndex: 201,
         display: 'flex',
         flexDirection: 'column',
@@ -148,30 +157,31 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
             position: 'fixed',
             top: 16,
             right: 16,
-            background: '#252540',
-            color: '#f0f0ff',
+            background: '#ffffff',
+            color: '#1a1a2e',
             padding: '10px 16px',
             borderRadius: 8,
             zIndex: 300,
             fontSize: 14,
-            border: '1px solid #2a2a4a',
+            border: '1px solid #e2e2ea',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           }}>
             {toast}
           </div>
         )}
 
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2a2a4a', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e2ea', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <div style={{ flex: 1 }}>
             <input
               value={lead.nombre}
               onChange={e => setLead(p => ({ ...p, nombre: e.target.value }))}
-              style={{ background: 'transparent', border: 'none', color: '#f0f0ff', fontSize: 18, fontWeight: 700, width: '100%', outline: 'none', padding: 0 }}
+              style={{ background: 'transparent', border: 'none', color: '#1a1a2e', fontSize: 18, fontWeight: 700, width: '100%', outline: 'none', padding: 0 }}
             />
-            <span style={{ color: estadoColors[lead.estado] || '#8888aa', fontSize: 12, fontWeight: 600 }}>{lead.estado}</span>
-            <span style={{ color: '#8888aa', fontSize: 12, marginLeft: 8 }}>{lead.diasEnSeguimiento} días</span>
+            <span style={{ color: estadoColors[lead.estado] || '#6b7280', fontSize: 12, fontWeight: 600 }}>{lead.estado}</span>
+            <span style={{ color: '#6b7280', fontSize: 12, marginLeft: 8 }}>{lead.diasEnSeguimiento} días</span>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8888aa', cursor: 'pointer', fontSize: 22, padding: 4, lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 22, padding: 4, lineHeight: 1 }}>×</button>
         </div>
 
         <div style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -179,19 +189,19 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
           <section>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={{ color: '#8888aa', fontSize: 11, display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fuente</label>
+                <label style={labelStyle}>Fuente</label>
                 <select value={lead.fuente} onChange={e => setLead(p => ({ ...p, fuente: e.target.value }))} style={inputStyle}>
                   {FUENTES.map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ color: '#8888aa', fontSize: 11, display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Closer</label>
+                <label style={labelStyle}>Closer</label>
                 <select value={lead.closer} onChange={e => setLead(p => ({ ...p, closer: e.target.value }))} style={inputStyle}>
                   {closers.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ color: '#8888aa', fontSize: 11, display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha Ingreso</label>
+                <label style={labelStyle}>Fecha Ingreso</label>
                 <input
                   value={lead.fechaIngreso}
                   onChange={e => setLead(p => ({ ...p, fechaIngreso: e.target.value }))}
@@ -199,25 +209,51 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
                 />
               </div>
               <div>
-                <label style={{ color: '#8888aa', fontSize: 11, display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estado</label>
+                <label style={labelStyle}>Estado</label>
                 <select
                   value={lead.estado}
                   onChange={e => handleEstadoChange(e.target.value)}
-                  style={{ ...inputStyle, color: estadoColors[lead.estado] || '#f0f0ff', borderColor: estadoColors[lead.estado] || '#2a2a4a', fontWeight: 600 }}
+                  style={{ ...inputStyle, color: estadoColors[lead.estado] || '#1a1a2e', borderColor: estadoColors[lead.estado] || '#e2e2ea', fontWeight: 600 }}
                 >
                   {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
                 </select>
               </div>
             </div>
+
+            {/* Largo plazo */}
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input
+                type="checkbox"
+                id="largoplazo"
+                checked={lead.largoplazo || false}
+                onChange={e => setLead(p => ({ ...p, largoplazo: e.target.checked }))}
+                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#6d28d9' }}
+              />
+              <label htmlFor="largoplazo" style={{ color: '#1a1a2e', fontSize: 13, cursor: 'pointer' }}>
+                Seguimiento a largo plazo
+              </label>
+            </div>
+
+            {lead.largoplazo && (
+              <div style={{ marginTop: 10 }}>
+                <label style={labelStyle}>Próximo contacto (DD/MM/YYYY)</label>
+                <input
+                  value={lead.proximoContacto || ''}
+                  onChange={e => setLead(p => ({ ...p, proximoContacto: e.target.value }))}
+                  placeholder="DD/MM/YYYY"
+                  style={inputStyle}
+                />
+              </div>
+            )}
           </section>
 
           {/* Navegación de toque */}
-          <section style={{ background: '#252540', borderRadius: 8, padding: 14 }}>
-            <div style={{ color: '#8888aa', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Toque Actual</div>
-            <div style={{ color: '#f0f0ff', fontSize: 15, fontWeight: 600, marginBottom: 2 }}>
+          <section style={{ background: '#f5f5f8', borderRadius: 8, padding: 14, border: '1px solid #e2e2ea' }}>
+            <div style={{ color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Toque Actual</div>
+            <div style={{ color: '#1a1a2e', fontSize: 15, fontWeight: 600, marginBottom: 2 }}>
               #{lead.toqueActual} — {toqueInfo?.nombre}
             </div>
-            <div style={{ color: '#8888aa', fontSize: 12, marginBottom: 12 }}>
+            <div style={{ color: '#6b7280', fontSize: 12, marginBottom: 12 }}>
               Día {toqueInfo?.dia} del seguimiento
               {lead.fechaProximoToque && ` · Próximo: ${lead.fechaProximoToque}`}
             </div>
@@ -225,14 +261,14 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
               <button
                 onClick={() => handleToqueNav(-1)}
                 disabled={lead.toqueActual <= 1}
-                style={{ flex: 1, background: '#1a1a2e', color: '#f0f0ff', border: '1px solid #2a2a4a', borderRadius: 6, padding: 8, cursor: lead.toqueActual <= 1 ? 'not-allowed' : 'pointer', opacity: lead.toqueActual <= 1 ? 0.4 : 1, fontSize: 13 }}
+                style={{ flex: 1, background: '#ffffff', color: '#1a1a2e', border: '1px solid #e2e2ea', borderRadius: 6, padding: 8, cursor: lead.toqueActual <= 1 ? 'not-allowed' : 'pointer', opacity: lead.toqueActual <= 1 ? 0.4 : 1, fontSize: 13 }}
               >
                 ← Anterior
               </button>
               <button
                 onClick={() => handleToqueNav(1)}
                 disabled={lead.toqueActual >= 12}
-                style={{ flex: 1, background: '#1a1a2e', color: '#f0f0ff', border: '1px solid #2a2a4a', borderRadius: 6, padding: 8, cursor: lead.toqueActual >= 12 ? 'not-allowed' : 'pointer', opacity: lead.toqueActual >= 12 ? 0.4 : 1, fontSize: 13 }}
+                style={{ flex: 1, background: '#ffffff', color: '#1a1a2e', border: '1px solid #e2e2ea', borderRadius: 6, padding: 8, cursor: lead.toqueActual >= 12 ? 'not-allowed' : 'pointer', opacity: lead.toqueActual >= 12 ? 0.4 : 1, fontSize: 13 }}
               >
                 Siguiente →
               </button>
@@ -241,7 +277,7 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
 
           {/* Nueva nota */}
           <section>
-            <div style={{ color: '#8888aa', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Nueva Nota</div>
+            <div style={{ color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Nueva Nota</div>
             <textarea
               value={nuevaNota}
               onChange={e => setNuevaNota(e.target.value)}
@@ -252,7 +288,7 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
             <button
               onClick={handleAddNota}
               disabled={savingNota || !nuevaNota.trim()}
-              style={{ marginTop: 8, background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 16px', cursor: !nuevaNota.trim() ? 'not-allowed' : 'pointer', fontSize: 13, opacity: !nuevaNota.trim() ? 0.5 : 1 }}
+              style={{ marginTop: 8, background: '#6d28d9', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 16px', cursor: !nuevaNota.trim() ? 'not-allowed' : 'pointer', fontSize: 13, opacity: !nuevaNota.trim() ? 0.5 : 1 }}
             >
               {savingNota ? 'Guardando...' : 'Guardar nota'}
             </button>
@@ -261,17 +297,17 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
           {/* Historial notas */}
           {notas.length > 0 && (
             <section>
-              <div style={{ color: '#8888aa', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+              <div style={{ color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
                 Historial ({notas.length})
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {notas.map(n => (
-                  <div key={n.id} style={{ background: '#252540', borderRadius: 6, padding: '10px 12px' }}>
+                  <div key={n.id} style={{ background: '#f5f5f8', borderRadius: 6, padding: '10px 12px', border: '1px solid #e2e2ea' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ color: '#8888aa', fontSize: 11 }}>{n.closer}</span>
-                      <span style={{ color: '#8888aa', fontSize: 11 }}>{n.fecha}</span>
+                      <span style={{ color: '#6b7280', fontSize: 11 }}>{n.closer}</span>
+                      <span style={{ color: '#6b7280', fontSize: 11 }}>{n.fecha}</span>
                     </div>
-                    <p style={{ color: '#f0f0ff', fontSize: 13, margin: 0, lineHeight: 1.5 }}>{n.nota}</p>
+                    <p style={{ color: '#1a1a2e', fontSize: 13, margin: 0, lineHeight: 1.5 }}>{n.nota}</p>
                   </div>
                 ))}
               </div>
@@ -280,17 +316,17 @@ export default function LeadModal({ lead: initialLead, closers, onClose, onUpdat
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '14px 20px', borderTop: '1px solid #2a2a4a', display: 'flex', gap: 10 }}>
+        <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e2ea', display: 'flex', gap: 10 }}>
           <button
             onClick={handleDelete}
-            style={{ background: 'transparent', color: '#f87171', border: '1px solid #f87171', borderRadius: 6, padding: '8px 14px', cursor: 'pointer', fontSize: 13 }}
+            style={{ background: 'transparent', color: '#ef4444', border: '1px solid #ef4444', borderRadius: 6, padding: '8px 14px', cursor: 'pointer', fontSize: 13 }}
           >
             Eliminar
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{ flex: 1, background: '#00ff88', color: '#0f0f1a', borderRadius: 6, padding: 8, cursor: saving ? 'wait' : 'pointer', fontWeight: 700, fontSize: 14, border: 'none', opacity: saving ? 0.7 : 1 }}
+            style={{ flex: 1, background: '#6d28d9', color: '#ffffff', borderRadius: 6, padding: 8, cursor: saving ? 'wait' : 'pointer', fontWeight: 700, fontSize: 14, border: 'none', opacity: saving ? 0.7 : 1 }}
           >
             {saving ? 'Guardando...' : 'Guardar cambios'}
           </button>

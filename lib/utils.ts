@@ -1,4 +1,4 @@
-import { EstadoLead, Toque } from './types';
+import { EstadoLead, Lead, Toque } from './types';
 
 export const ESTADOS_CONGELADOS: EstadoLead[] = ['Ganado', 'No interesado', 'Perdido'];
 
@@ -73,4 +73,31 @@ export function estaCongelado(estado: EstadoLead): boolean {
 export function formatearFechaHoy(): string {
   const hoy = new Date();
   return `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
+}
+
+export type ToqueStatus = 'ok' | 'hoy' | 'vencido' | 'futuro';
+
+export function getToqueStatus(lead: Lead): ToqueStatus {
+  const { fechaIngreso, toqueActual, fechaUltimoToque } = lead;
+  const toque = TOQUES.find(t => t.num === toqueActual);
+  if (!toque || !fechaIngreso) return 'futuro';
+
+  const ingreso = parseDate(fechaIngreso);
+  ingreso.setHours(0, 0, 0, 0);
+  const expectedDate = new Date(ingreso.getTime() + toque.dia * 86400000);
+  expectedDate.setHours(0, 0, 0, 0);
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  // Confirmed: fechaUltimoToque >= expectedDate
+  if (fechaUltimoToque) {
+    const ultimo = parseDate(fechaUltimoToque);
+    ultimo.setHours(0, 0, 0, 0);
+    if (ultimo >= expectedDate) return 'ok';
+  }
+
+  if (expectedDate.getTime() === hoy.getTime()) return 'hoy';
+  if (expectedDate < hoy) return 'vencido';
+  return 'futuro';
 }

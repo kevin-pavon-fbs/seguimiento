@@ -14,6 +14,8 @@ export interface Lead {
   slackIdCloser: string;
   diasEnSeguimiento: number;
   tieneToqueHoy: boolean;
+  largoplazo?: boolean;
+  proximoContacto?: string;
 }
 
 export interface Nota {

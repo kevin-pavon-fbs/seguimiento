@@ -15,7 +15,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterCloser, setFilterCloser] = useState('');
-  const [showFrozen, setShowFrozen] = useState(false);
+  const [showGanados, setShowGanados] = useState(false);
+  const [showPerdidos, setShowPerdidos] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showReporte, setShowReporte] = useState(false);
@@ -64,10 +65,10 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div style={{ background: '#0f0f1a', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <div style={{ background: '#f5f5f8', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, system-ui, sans-serif' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ color: '#00ff88', fontSize: 32, marginBottom: 12 }}>🎯</div>
-          <div style={{ color: '#8888aa', fontSize: 16 }}>Cargando leads...</div>
+          <div style={{ color: '#6d28d9', fontSize: 32, marginBottom: 12 }}>🎯</div>
+          <div style={{ color: '#6b7280', fontSize: 16 }}>Cargando leads...</div>
         </div>
       </div>
     );
@@ -75,13 +76,13 @@ export default function Home() {
 
   if (error) {
     return (
-      <div style={{ background: '#0f0f1a', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <div style={{ background: '#f5f5f8', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, system-ui, sans-serif' }}>
         <div style={{ textAlign: 'center', maxWidth: 440, padding: 20 }}>
-          <div style={{ color: '#f87171', fontSize: 32, marginBottom: 12 }}>⚠️</div>
-          <div style={{ color: '#f0f0ff', fontSize: 16, marginBottom: 8 }}>Error al conectar</div>
-          <div style={{ color: '#8888aa', fontSize: 13, marginBottom: 16 }}>{error}</div>
-          <div style={{ color: '#8888aa', fontSize: 12, background: '#1a1a2e', padding: 12, borderRadius: 8, textAlign: 'left', lineHeight: 1.6 }}>
-            Verificá que <code style={{ color: '#00ff88' }}>NEXT_PUBLIC_APPS_SCRIPT_URL</code> esté configurada en <code style={{ color: '#00ff88' }}>.env.local</code>
+          <div style={{ color: '#ef4444', fontSize: 32, marginBottom: 12 }}>⚠️</div>
+          <div style={{ color: '#1a1a2e', fontSize: 16, marginBottom: 8 }}>Error al conectar</div>
+          <div style={{ color: '#6b7280', fontSize: 13, marginBottom: 16 }}>{error}</div>
+          <div style={{ color: '#6b7280', fontSize: 12, background: '#ffffff', padding: 12, borderRadius: 8, textAlign: 'left', lineHeight: 1.6, border: '1px solid #e2e2ea' }}>
+            Verificá que <code style={{ color: '#6d28d9' }}>NEXT_PUBLIC_APPS_SCRIPT_URL</code> esté configurada en <code style={{ color: '#6d28d9' }}>.env.local</code>
           </div>
         </div>
       </div>
@@ -89,13 +90,15 @@ export default function Home() {
   }
 
   return (
-    <div style={{ background: '#0f0f1a', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ background: '#f5f5f8', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Header
         closers={closers}
         filterCloser={filterCloser}
         onFilterChange={setFilterCloser}
-        showFrozen={showFrozen}
-        onToggleFrozen={() => setShowFrozen(p => !p)}
+        showGanados={showGanados}
+        onToggleGanados={() => setShowGanados(p => !p)}
+        showPerdidos={showPerdidos}
+        onTogglePerdidos={() => setShowPerdidos(p => !p)}
         onAddLead={() => setShowAddModal(true)}
         onReporte={() => setShowReporte(true)}
         onSetup={handleSetup}
@@ -106,7 +109,8 @@ export default function Home() {
       <KanbanBoard
         leads={leads}
         filterCloser={filterCloser}
-        showFrozen={showFrozen}
+        showGanados={showGanados}
+        showPerdidos={showPerdidos}
         onLeadClick={setSelectedLead}
         onLeadUpdate={updateLead}
       />
