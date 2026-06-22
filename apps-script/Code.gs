@@ -435,15 +435,16 @@ function configurarTrigger5am() {
   ScriptApp.newTrigger('checkLeadsDelDia')
     .timeBased()
     .everyDays(1)
-    .atHour(5)
+    .atHour(8)
+    .inTimezone('America/Argentina/Buenos_Aires')
     .create();
-  SpreadsheetApp.getUi().alert('✅ Trigger configurado a las 5am.');
+  SpreadsheetApp.getUi().alert('✅ Trigger configurado a las 8am.');
 }
 
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('🎯 Seguimiento Leads')
-    .addItem('Configurar trigger 5am', 'configurarTrigger5am')
+    .addItem('Configurar trigger 8am', 'configurarTrigger5am')
     .addItem('Ejecutar check ahora', 'checkLeadsDelDia')
     .addToUi();
 }
