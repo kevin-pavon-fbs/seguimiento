@@ -31,12 +31,13 @@ export default function ReporteModal({ onClose }: Props) {
     setTesting(true);
     try {
       const res = await fetch('/api/slack/test', { method: 'POST' });
-      if (!res.ok) throw new Error('Error');
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Error desconocido');
       setToast('✅ Mensaje de test enviado a Slack');
-      setTimeout(() => setToast(''), 3000);
-    } catch {
-      setToast('❌ Error al enviar test');
-      setTimeout(() => setToast(''), 3000);
+      setTimeout(() => setToast(''), 5000);
+    } catch (e: unknown) {
+      setToast('❌ ' + (e instanceof Error ? e.message : 'Error al enviar test'));
+      setTimeout(() => setToast(''), 8000);
     }
     setTesting(false);
   };
